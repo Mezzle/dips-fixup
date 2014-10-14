@@ -16,12 +16,22 @@
 (function () {
     var $ = jQuery.noConflict(true),
         baseURL = document.URL.match(/^[\w:]*\/\/[\w.]*\/[\w.]*\//) [0],
-        duty=document.URL.match(/duty=(\d+)/)[1]; // I should use a proper parser here
+        duty=document.URL.match(/duty=(\d+)/); duty = duty && duty[1]; // I should use a proper parser here
     
     // I like named functions to act as comments in source and stack traces. If you don't, bite me!
     function dummy_page_get_for_keepalive () { $.get(baseURL +'DivisionalRegister.asp'); } // .curry() not built-in
     
     if ( baseURL ) { window.setInterval(dummy_page_get_for_keepalive, 120000); }
+    
+    function SimplifyMasthead() {
+        var title_bar = $('table tr:contains(Duty and Information Planning System) table');
+        title_bar.removeAttr('height');
+        title_bar.find('td').removeAttr('background');
+        title_bar.find('img[alt="St John Ambulance - Company Logo"]').css('height',40);
+    }
+    SimplifyMasthead();
+    
+    //$('td:has(>a[href^=DutyInformation5-Show])').hide();
     
     function GetMemberContact(id,callback) {
         return $.get(baseURL + 'membermanagement-edit.asp?type=edit&number=' + id,function(page){
@@ -136,18 +146,21 @@
                 }
             });
         }
-        GetCrews(duty,ReplaceAllocations);
-        
-        GetMembersOnDuty(duty,function(ids){
-            $('tr[onclick^=SM]').each(function(){
-                var row=$(this), id=ids[NameFromRow(row)];
-                if ( id ) {
-                    GetMemberDriving(id,function(driving){
-                        row.find('td:eq(3)').append(' (' + driving + ')');
-                    });
-                }
+        function AugmentListing() {
+            GetCrews(duty,ReplaceAllocations);
+            
+            GetMembersOnDuty(duty,function(ids){
+                $('tr[onclick^=SM]').each(function(){
+                    var row=$(this), id=ids[NameFromRow(row)];
+                    if ( id ) {
+                        GetMemberDriving(id,function(driving){
+                            row.find('td:eq(3)').append(' (' + driving + ')');
+                        });
+                    }
+                });
             });
-        });
+        }
+        $('td[colspan=8].keyline:contains(Members currently booked)').click(AugmentListing);
     }
     
     if (document.URL.match(/CountMeInService\.asp\?show=all/)) { CountMeInService(); }
