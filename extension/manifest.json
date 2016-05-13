@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+  "name": "DIPS Fixup",
+  "description": "Makes DIPS nicer",
+  "version": "0.0.1",
+  "browser_action": {
+    "default_icon": "images/icon38.png"
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://dips.sja.org.uk/*"
+      ],
+      "js": [
+        "scripts/jquery.min.js",
+        "scripts/content_script.js"
+      ],
+      "all_frames": true
+    }
+  ]
+}

@@ -1,14 +1,3 @@
-// ==UserScript==
-// @name        DIPS fixup
-// @namespace   http://www.sja.org.uk/wmids
-// @description Fixup irritations in DIPS
-// @include     https://dips.sja.org.uk/*
-// @version     1
-// @grant       none
-// @require     https://code.jquery.com/jquery-2.2.3.min.js
-// ==/UserScript==
-
-
 var $ = jQuery.noConflict(true);
 
 var pathArray = window.location.href.split('/');
@@ -52,14 +41,14 @@ var DIPS = {
 
                     details[name] = val;
                     name = {"Car": "C", "Ambulance": "A", "Minibus": "M"}[name];
-                    
+
                     val = {1: "F", 2: "O", 3: "R"}[val];
-                    
+
                     if (name && val) {
                         summary = summary + ' ' + name + '=' + val;
                     }
                 });
-                
+
                 callback.call(details, summary.trim());
             }
         );
@@ -101,6 +90,23 @@ if (window.top == window) {
                 });
             });
         });
+    }
+
+    if (window.location.href.match(/DutyInformation2-ShowMap\.asp/)) {
+        $('<button id="logstuff">Console Test</button>')
+        .appendTo(ournav)
+        .click(function () {
+            $('form').each(function () {
+                var out = {};
+                var data = $(this).serializeArray();
+
+                $.each(data, function (k, v) {
+                    out[v.name] = v.value;
+                });
+
+                console.log(out);
+            })
+        })
     }
 
     if (ournav.not(':empty').length >= 1) {
